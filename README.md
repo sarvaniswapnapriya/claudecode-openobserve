@@ -51,7 +51,51 @@ You'll need to set `ZO_ROOT_USER_EMAIL` and `ZO_ROOT_USER_PASSWORD` on the first
 
 ---
 
-## 2. Set up the demo repository
+## 2. Configure Claude Code telemetry
+
+Once OpenObserve is running on `http://localhost:5080`, configure Claude Code to send its OpenTelemetry data to OpenObserve.
+
+Run the following commands in the same terminal session where you will run Claude Code:
+
+```bash
+export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:5080/api/default
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzczEyMz=,stream-name=claude_code"
+
+export OTEL_METRICS_EXPORTER=otlp
+export OTEL_LOGS_EXPORTER=otlp
+export OTEL_TRACES_EXPORTER=otlp
+
+export CLAUDE_CODE_ENABLE_TELEMETRY=1
+export CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1
+
+export OTEL_LOG_TOOL_DETAILS=1
+export OTEL_LOG_TOOL_CONTENT=1
+export OTEL_LOG_USER_PROMPTS=1
+```
+
+These environment variables configure Claude Code to:
+
+* Enable telemetry collection.
+* Export **traces, logs, and metrics** using OTLP.
+* Send the telemetry to the local OpenObserve instance.
+* Include Claude Code tool details and tool content in the telemetry.
+* Include user prompts in the telemetry.
+* Send the data to the `claude_code` stream in OpenObserve.
+
+After setting these variables, start Claude Code from the same terminal:
+
+```bash
+claude
+```
+
+Claude Code will now export telemetry while it works on the demo repository.
+
+> **Note:** The `Authorization` header above uses the credentials configured for this local demo. For any shared or production setup, replace it with credentials appropriate for your OpenObserve instance and avoid committing credentials to the repository.
+
+---
+
+## 3. Set up the demo repository
 
 The repository contains a deliberately broken formatting setup so Claude Code has a real multi-file task to work through.
 
@@ -82,7 +126,7 @@ Expected result:
 
 ---
 
-## 3. The demo prompt
+## 4. The demo prompt
 
 Run Claude Code in a session with telemetry/tracing enabled and give it this prompt:
 
@@ -106,7 +150,7 @@ The Bash test run is expected to be one of the slower spans in the trace. That's
 
 ---
 
-## 4. What to look for in OpenObserve
+## 5. What to look for in OpenObserve
 
 After Claude Code completes the task, open OpenObserve and inspect the resulting trace.
 
@@ -130,7 +174,7 @@ This is the key part of the demo: instead of only seeing Claude Code perform the
 
 ---
 
-## 5. Resetting between takes
+## 6. Resetting between takes
 
 If you want to record the demo more than once, reset the application files to their broken starting state:
 
