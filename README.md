@@ -1,4 +1,4 @@
-# demo-repo
+# Demo
 
 A tiny sample repo built for one purpose: give Claude Code a task with real
 shape (a multi-file search, several edits, then a test run) so a resulting
